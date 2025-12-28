@@ -18,16 +18,16 @@
     
     --danger: #FF8A80;
     
-    /* Soft Pastel Piece Colors */
-    --piece-0: #FFADAD; /* Pastel Red */
-    --piece-1: #FFD6A5; /* Pastel Orange */
-    --piece-2: #FDFFB6; /* Pastel Yellow */
-    --piece-3: #CAFFBF; /* Pastel Green */
-    --piece-4: #9BF6FF; /* Pastel Cyan */
-    --piece-5: #A0C4FF; /* Pastel Blue */
-    --piece-6: #BDB2FF; /* Pastel Indigo */
-    --piece-7: #FFC6FF; /* Pastel Purple */
-    --piece-8: #FF99C8; /* Pastel Hot Pink */
+    /* Richer/Darker Pastel Piece Colors for better visibility */
+    --piece-0: #FF6B6B; /* Vibrant Red/Coral */
+    --piece-1: #FF9F43; /* Vibrant Orange */
+    --piece-2: #FDCB6E; /* Golden Yellow */
+    --piece-3: #55EFA6; /* Bright Mint */
+    --piece-4: #00CEC9; /* Robin's Egg Teal */
+    --piece-5: #74B9FF; /* Sky Blue */
+    --piece-6: #A29BFE; /* Peri/Lavender */
+    --piece-7: #E056FD; /* Orchid/Purple */
+    --piece-8: #FD79A8; /* Hot Pink */
 }
 
 * {
@@ -310,4 +310,20 @@ footer {
     font-weight: 700;
     font-size: 0.9rem;
     color: var(--text-secondary);
+}
+
+/* Explicit Piece Coloring for Board Cells */
+.cell.piece-0 { background-color: var(--piece-0) !important; color: #fff; }
+.cell.piece-1 { background-color: var(--piece-1) !important; color: #fff; }
+.cell.piece-2 { background-color: var(--piece-2) !important; color: #333; }
+.cell.piece-3 { background-color: var(--piece-3) !important; color: #333; }
+.cell.piece-4 { background-color: var(--piece-4) !important; color: #333; }
+.cell.piece-5 { background-color: var(--piece-5) !important; color: #fff; }
+.cell.piece-6 { background-color: var(--piece-6) !important; color: #fff; }
+.cell.piece-7 { background-color: var(--piece-7) !important; color: #fff; }
+.cell.piece-8 { background-color: var(--piece-8) !important; color: #fff; }
+
+.cell.piece {
+    box-shadow: inset 0 0 0 2px rgba(255,255,255,0.3);
+    border: none;
 }
