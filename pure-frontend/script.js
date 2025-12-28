@@ -17,25 +17,39 @@ const LABELS = [
 
 const EMPTY_INDICES = [43, 44, 48, 49];
 
+// Piece Definitions for UI Rendering (Mini Grids)
+// 0,0 is top-left of the bounding box
+const RAW_PIECES_UI = [
+    { id: 0, shape: [[0,0], [0,1], [0,2], [0,3], [0,4], [1,0]], w:5, h:2 },
+    { id: 1, shape: [[0,0], [0,1], [0,2], [0,3], [1,0]], w:4, h:2 },
+    { id: 2, shape: [[0,0], [0,1], [0,2], [0,3], [1,0], [2,0]], w:4, h:3 },
+    { id: 3, shape: [[0,0], [0,1], [0,2], [0,3], [0,4], [1,1]], w:5, h:2 },
+    { id: 4, shape: [[0,0], [0,1], [0,2], [0,3], [1,1], [2,1]], w:4, h:3 },
+    { id: 5, shape: [[0,0], [0,1], [0,2], [1,0], [1,1]], w:3, h:2 },
+    { id: 6, shape: [[0,0], [0,1], [1,1], [1,2], [1,3]], w:4, h:2 },
+    { id: 7, shape: [[0,0], [0,1], [1,1], [1,2], [1,3], [2,1]], w:4, h:3 },
+    { id: 8, shape: [[0,0], [0,1], [0,2], [1,1], [2,0], [2,1]], w:3, h:3 }
+];
+
 // State
 let selectedMonth = null;
 let selectedDay = null;
 let selectedWeekday = null;
 let currentSolution = null;
 let solverWorker = null;
+let revealedPieces = new Set(); 
 
 // DOM Elements
 const boardEl = document.getElementById('board');
 const statusText = document.getElementById('status-text');
 const solveBtn = document.getElementById('solve-btn');
 const clearBtn = document.getElementById('clear-btn');
-const hintSlider = document.getElementById('hint-slider');
-const hintValue = document.getElementById('hint-value');
+const inventoryEl = document.getElementById('inventory');
 
 function init() {
     renderBoard();
     
-    // Initialize Worker from inlined function to support file:// protocol
+    // Initialize Worker from inlined source for file:// support
     const workerBlob = new Blob(['(' + solverWorkerScript.toString() + ')()'], { type: 'application/javascript' });
     solverWorker = new Worker(URL.createObjectURL(workerBlob));
     solverWorker.onmessage = handleSolverMessage;
@@ -43,7 +57,6 @@ function init() {
     // Event Listeners
     solveBtn.addEventListener('click', startSolver);
     clearBtn.addEventListener('click', resetBoard);
-    hintSlider.addEventListener('input', updateHint);
 }
 
 function renderBoard() {
@@ -64,6 +77,80 @@ function renderBoard() {
     });
 }
 
+function renderInventory() {
+    inventoryEl.innerHTML = '';
+    inventoryEl.classList.remove('hidden');
+    
+    RAW_PIECES_UI.forEach(piece => {
+        const card = document.createElement('div');
+        card.className = 'piece-card hidden-piece';
+        card.dataset.id = piece.id;
+        card.onclick = () => togglePiece(piece.id);
+        
+        const miniGrid = document.createElement('div');
+        miniGrid.className = 'mini-grid';
+        miniGrid.style.gridTemplateColumns = `repeat(${piece.w}, 1fr)`;
+        
+        const grid = Array(piece.h).fill().map(() => Array(piece.w).fill(0));
+        piece.shape.forEach(([r, c]) => {
+            if (grid[r] && grid[r][c] !== undefined) grid[r][c] = 1;
+        });
+        
+        for(let r=0; r<piece.h; r++) {
+            for(let c=0; c<piece.w; c++) {
+                const miniCell = document.createElement('div');
+                miniCell.className = 'mini-cell';
+                if (grid[r][c] === 1) {
+                    miniCell.style.backgroundColor = `var(--piece-${piece.id})`;
+                } else {
+                    miniCell.style.opacity = '0';
+                }
+                miniGrid.appendChild(miniCell);
+            }
+        }
+        
+        card.appendChild(miniGrid);
+        inventoryEl.appendChild(card);
+    });
+}
+
+function togglePiece(id) {
+    if (!currentSolution) return;
+    
+    const card = inventoryEl.querySelector(`.piece-card[data-id="${id}"]`);
+    
+    if (revealedPieces.has(id)) {
+        revealedPieces.delete(id);
+        card.classList.remove('revealed');
+        card.classList.add('hidden-piece');
+        removePieceFromBoard(id);
+    } else {
+        revealedPieces.add(id);
+        card.classList.add('revealed');
+        card.classList.remove('hidden-piece');
+        showPieceOnBoard(id);
+    }
+}
+
+function showPieceOnBoard(id) {
+    const placement = currentSolution.find(p => p.pieceId === id);
+    if (!placement) return;
+    
+    placement.cells.forEach(idx => {
+        const cell = boardEl.children[idx];
+        if (cell) {
+            cell.classList.add('piece', `piece-${id}`, 'animate-pop');
+            setTimeout(() => cell.classList.remove('animate-pop'), 400);
+        }
+    });
+}
+
+function removePieceFromBoard(id) {
+    document.querySelectorAll(`.cell.piece-${id}`).forEach(el => {
+        el.classList.remove('piece', `piece-${id}`, 'animate-pop');
+    });
+}
+
 function handleCellClick(index, label, cellEl) {
     if (currentSolution) return; 
 
@@ -72,14 +159,11 @@ function handleCellClick(index, label, cellEl) {
     const isWeekday = index >= 45 && !EMPTY_INDICES.includes(index); 
 
     if (isMonth) {
-        if (selectedMonth === index) selectedMonth = null;
-        else selectedMonth = index;
+        selectedMonth = (selectedMonth === index) ? null : index;
     } else if (isDay) {
-        if (selectedDay === index) selectedDay = null;
-        else selectedDay = index;
+        selectedDay = (selectedDay === index) ? null : index;
     } else if (isWeekday) {
-        if (selectedWeekday === index) selectedWeekday = null;
-        else selectedWeekday = index;
+        selectedWeekday = (selectedWeekday === index) ? null : index;
     }
 
     updateSelectionUI();
@@ -101,13 +185,13 @@ function toggleSelect(index) {
 function checkReady() {
     const ready = selectedMonth !== null && selectedDay !== null && selectedWeekday !== null;
     solveBtn.disabled = !ready;
-    solveBtn.textContent = ready ? "Solve Puzzle" : "Select Date to Solve";
+    solveBtn.textContent = ready ? "Solve It!" : "Pick Date";
     
     if (ready) {
-        statusText.textContent = "Ready to solve!";
+        statusText.textContent = "Ready!";
         statusText.style.color = "var(--accent)";
     } else {
-        statusText.textContent = "Select a Month, Day, and Weekday";
+        statusText.textContent = "Select Date";
         statusText.style.color = "var(--text-secondary)";
     }
 }
@@ -117,9 +201,14 @@ function startSolver() {
     
     solveBtn.disabled = true;
     solveBtn.textContent = "Solving...";
-    statusText.textContent = "Searching for solution...";
+    statusText.textContent = "Thinking...";
     
-    clearSolutionViz();
+    document.querySelectorAll('.cell').forEach(el => {
+        for(let i=0; i<9; i++) el.classList.remove(`piece-${i}`, 'piece');
+    });
+    
+    inventoryEl.classList.add('hidden');
+    inventoryEl.innerHTML = '<div class="inventory-placeholder"><p>Thinking...</p></div>';
 
     const blocked = [selectedMonth, selectedDay, selectedWeekday];
     solverWorker.postMessage({ command: 'solve', blockedIndices: blocked });
@@ -130,43 +219,17 @@ function handleSolverMessage(e) {
     
     if (type === 'success') {
         currentSolution = solution;
-        statusText.textContent = "Solution Found!";
+        statusText.textContent = "Found!";
         solveBtn.textContent = "Solved";
-        hintSlider.disabled = false;
-        hintSlider.value = 0; 
-        hintValue.textContent = 0;
         
-        updateHint();
+        revealedPieces.clear();
+        renderInventory(); 
         
     } else if (type === 'error') {
-        statusText.textContent = "No solution found.";
+        statusText.textContent = "No solution.";
         statusText.style.color = "var(--danger)";
         solveBtn.disabled = false;
         solveBtn.textContent = "Retry";
-    }
-}
-
-function clearSolutionViz() {
-    document.querySelectorAll('.cell').forEach(el => {
-        for(let i=0; i<9; i++) el.classList.remove(`piece-${i}`, 'piece');
-    });
-}
-
-function updateHint() {
-    const limit = parseInt(hintSlider.value);
-    hintValue.textContent = limit;
-    
-    if (!currentSolution) return;
-    clearSolutionViz();
-    
-    for (let i = 0; i < limit; i++) {
-        const placement = currentSolution[i];
-        if (placement) {
-            placement.cells.forEach(idx => {
-                const cell = boardEl.children[idx];
-                if (cell) cell.classList.add('piece', `piece-${placement.pieceId}`);
-            });
-        }
     }
 }
 
@@ -175,14 +238,19 @@ function resetBoard() {
     selectedDay = null;
     selectedWeekday = null;
     currentSolution = null;
+    revealedPieces.clear();
     
     updateSelectionUI();
     checkReady();
-    clearSolutionViz();
     
-    hintSlider.value = 0;
-    hintSlider.disabled = true;
-    statusText.textContent = "Select a Month, Day, and Weekday";
+    document.querySelectorAll('.cell').forEach(el => {
+        for(let i=0; i<9; i++) el.classList.remove(`piece-${i}`, 'piece');
+    });
+    
+    inventoryEl.classList.add('hidden');
+    inventoryEl.innerHTML = '<div class="inventory-placeholder"><p>Pieces will appear here!</p></div>';
+    
+    statusText.textContent = "Select Date";
     statusText.style.color = "var(--text-secondary)";
 }
 

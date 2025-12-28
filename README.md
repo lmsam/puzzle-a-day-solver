@@ -6,11 +6,11 @@ A web-based solver for the "Puzzle-A-Day" calendar puzzle. This application solv
 
 ## Features
 
-- **Interactive 6x9 Grid**: Select any Month, Day, and Weekday.
-- **Fast Solver**: Uses a backtracking algorithm with "First Empty Cell" optimization to solve even complex dates in milliseconds.
-- **Visualization**: Distinct colors for each of the 9 pieces.
-- **Progressive Reveal**: Use the hint slider to reveal the solution piece by piece.
-- **Rich Aesthetics**: Modern, dark-themed UI with glassmorphism effects.
+- **Cozy & Playful Interface**: Inspired by "Animal Crossing", featuring rounded corners, creamy backgrounds, and soothing pastel colors.
+- **Interactive Inventory**: Instead of a simple slider, you get a "backpack" of pieces. Click any piece to toggle its visibility on the board!
+- **Fast Solver**: Uses a backtracking algorithm with optimization to solve in milliseconds.
+- **Pure Frontend**: Works offline or on static hosting without a backend.
+- **Responsive**: Adapts to different screen sizes.
 
 ## Tech Stack
 
