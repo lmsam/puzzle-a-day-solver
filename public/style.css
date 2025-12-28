@@ -1,24 +1,24 @@
 :root {
-  --bg-color: #0f172a;
-  --board-bg: #1e293b;
-  --cell-bg: #334155;
-  --cell-hover: #475569;
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
-  --accent: #38bdf8;
-  --accent-hover: #0ea5e9;
-  --danger: #ef4444;
-
-  /* Piece Colors - Neon Pastel Palette */
-  --piece-0: #f472b6; /* Pink */
-  --piece-1: #c084fc; /* Purple */
-  --piece-2: #818cf8; /* Indigo */
-  --piece-3: #60a5fa; /* Blue */
-  --piece-4: #2dd4bf; /* Teal */
-  --piece-5: #4ade80; /* Green */
-  --piece-6: #a3e635; /* Lime */
-  --piece-7: #facc15; /* Yellow */
-  --piece-8: #fb923c; /* Orange */
+    --bg-color: #f8fafc; /* Light Slate 50 */
+    --board-bg: #e2e8f0; /* Slate 200 */
+    --cell-bg: #ffffff;
+    --cell-hover: #f1f5f9;
+    --text-primary: #1e293b; /* Slate 800 */
+    --text-secondary: #64748b; /* Slate 500 */
+    --accent: #2563eb; /* Royal Blue */
+    --accent-hover: #1d4ed8;
+    --danger: #ef4444;
+    
+    /* Piece Colors - "Design System" Palette (Distinct but not neon) */
+    --piece-0: #f87171; /* Soft Red */
+    --piece-1: #fb923c; /* Orange */
+    --piece-2: #fbbf24; /* Amber */
+    --piece-3: #a3e635; /* Lime */
+    --piece-4: #34d399; /* Emerald */
+    --piece-5: #22d3ee; /* Cyan */
+    --piece-6: #818cf8; /* Indigo */
+    --piece-7: #c084fc; /* Violet */
+    --piece-8: #f472b6; /* Pink */
 }
 
 * {
@@ -53,9 +53,8 @@ header {
 header h1 {
   font-weight: 600;
   font-size: 2.5rem;
-  background: linear-gradient(to right, var(--accent), #c084fc);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--text-primary);
+  /* Removed gradient for cleaner look */
   margin-bottom: 0.5rem;
 }
 
@@ -68,11 +67,12 @@ header p {
   display: grid;
   grid-template-columns: repeat(6, 1fr); /* 6x9 grid */
   gap: 8px;
-  padding: 20px;
-  background: rgba(30, 41, 59, 0.5);
-  backdrop-filter: blur(10px);
+  padding: 24px;
+  background: var(--board-bg);
+  /* Removed glassmorphism blur for solid clean look */
   border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(0,0,0,0.05);
   width: 100%;
   max-width: 480px; /* Constrain width for better aspect ratio */
 }
@@ -80,34 +80,38 @@ header p {
 .cell {
   aspect-ratio: 1;
   background-color: var(--cell-bg);
-  border-radius: 8px;
+  border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 0.9rem;
-  font-weight: 500;
+  font-weight: 600;
+  color: var(--text-secondary);
   cursor: pointer;
   transition: all 0.2s ease;
   user-select: none;
   position: relative;
   overflow: hidden;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
 }
 
 .cell:hover {
   background-color: var(--cell-hover);
-  transform: scale(1.05);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
 .cell.empty {    /* They should be visible for pieces to show, but look 'inactive' when empty */
     background-color: transparent;
-    border: 1px dashed rgba(255, 255, 255, 0.1);
+    border: 2px dashed #cbd5e1; /* Slate 300 */
     cursor: default;
+    box-shadow: none;
 }
 
 .cell.selected {
   background-color: var(--text-primary);
-  color: var(--bg-color);
-  box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+  color: #ffffff;
+  box-shadow: 0 0 0 2px var(--bg-color), 0 0 0 4px var(--text-primary);
   z-index: 10;
 }
 
@@ -149,79 +153,97 @@ header p {
 
 /* Controls */
 .controls {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  background: rgba(30, 41, 59, 0.3);
-  padding: 20px;
-  border-radius: 12px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    background: #ffffff;
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(0,0,0,0.05);
 }
 
 .status-bar {
-  text-align: center;
-  min-height: 1.5rem;
-  color: var(--accent);
-  font-weight: 500;
+    text-align: center;
+    min-height: 1.5rem;
+    color: var(--accent);
+    font-weight: 600;
 }
 
 .actions {
-  display: flex;
-  gap: 12px;
+    display: flex;
+    gap: 12px;
 }
 
 button {
-  flex: 1;
-  padding: 12px;
-  border: none;
-  border-radius: 8px;
-  font-family: inherit;
-  font-weight: 600;
-  cursor: pointer;
-  transition: opacity 0.2s;
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    font-family: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.95rem;
 }
 
 #solve-btn {
-  background-color: var(--accent);
-  color: var(--bg-color);
+    background-color: var(--accent);
+    color: #ffffff;
+    box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.3);
+}
+
+#solve-btn:hover {
+    background-color: var(--accent-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 8px -1px rgba(37, 99, 235, 0.4);
 }
 
 #solve-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+    background-color: var(--text-secondary);
 }
 
 #clear-btn {
-  background-color: transparent;
-  border: 1px solid var(--text-secondary);
-  color: var(--text-secondary);
+    background-color: transparent;
+    border: 1px solid #cbd5e1;
+    color: var(--text-secondary);
 }
 
 #clear-btn:hover {
-  border-color: var(--text-primary);
-  color: var(--text-primary);
+    border-color: var(--text-primary);
+    color: var(--text-primary);
+    background-color: #f8fafc;
 }
 
 .hint-control {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 8px;
+    padding-top: 16px;
+    border-top: 1px solid #e2e8f0;
 }
 
 .hint-control label {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.9rem;
-  color: var(--text-secondary);
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    font-weight: 500;
 }
 
-input[type="range"] {
-  width: 100%;
-  accent-color: var(--accent);
+input[type=range] {
+    width: 100%;
+    accent-color: var(--accent);
 }
 
 footer {
-  font-size: 0.8rem;
-  color: var(--text-secondary);
-  opacity: 0.5;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    opacity: 0.8;
 }
