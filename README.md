@@ -48,6 +48,13 @@ A web-based solver for the "Puzzle-A-Day" calendar puzzle. This application solv
 4. Open your browser and navigate to:
    `http://localhost:3000`
 
+### Pure Frontend Version
+
+A standalone version that requires no backend is available in the `pure-frontend` directory.
+
+- You can simply open `pure-frontend/index.html` in your browser (note: simple local file opening blocks Web Workers in some browsers due to CORS; use a simple local server like Python's `http.server` or VS Code Live Server).
+- This version is ready for static hosting services like GitHub Pages or Vercel.
+
 ## How it Works
 
 The puzzle board consists of 54 cells.
