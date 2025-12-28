@@ -1,0 +1,227 @@
+:root {
+  --bg-color: #0f172a;
+  --board-bg: #1e293b;
+  --cell-bg: #334155;
+  --cell-hover: #475569;
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --accent: #38bdf8;
+  --accent-hover: #0ea5e9;
+  --danger: #ef4444;
+
+  /* Piece Colors - Neon Pastel Palette */
+  --piece-0: #f472b6; /* Pink */
+  --piece-1: #c084fc; /* Purple */
+  --piece-2: #818cf8; /* Indigo */
+  --piece-3: #60a5fa; /* Blue */
+  --piece-4: #2dd4bf; /* Teal */
+  --piece-5: #4ade80; /* Green */
+  --piece-6: #a3e635; /* Lime */
+  --piece-7: #facc15; /* Yellow */
+  --piece-8: #fb923c; /* Orange */
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Outfit", sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-primary);
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.container {
+  max-width: 600px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+}
+
+header {
+  text-align: center;
+}
+
+header h1 {
+  font-weight: 600;
+  font-size: 2.5rem;
+  background: linear-gradient(to right, var(--accent), #c084fc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 0.5rem;
+}
+
+header p {
+  color: var(--text-secondary);
+}
+
+/* Board */
+.board {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr); /* 6x9 grid */
+  gap: 8px;
+  padding: 20px;
+  background: rgba(30, 41, 59, 0.5);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  width: 100%;
+  max-width: 480px; /* Constrain width for better aspect ratio */
+}
+
+.cell {
+  aspect-ratio: 1;
+  background-color: var(--cell-bg);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.cell:hover {
+  background-color: var(--cell-hover);
+  transform: scale(1.05);
+}
+
+.cell.empty {    /* They should be visible for pieces to show, but look 'inactive' when empty */
+    background-color: transparent;
+    border: 1px dashed rgba(255, 255, 255, 0.1);
+    cursor: default;
+}
+
+.cell.selected {
+  background-color: var(--text-primary);
+  color: var(--bg-color);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+  z-index: 10;
+}
+
+/* Piece styling */
+.cell.piece {
+  color: rgba(0, 0, 0, 0.6);
+  font-weight: bold;
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Generate piece color classes */
+.cell.piece-0 {
+  background-color: var(--piece-0);
+}
+.cell.piece-1 {
+  background-color: var(--piece-1);
+}
+.cell.piece-2 {
+  background-color: var(--piece-2);
+}
+.cell.piece-3 {
+  background-color: var(--piece-3);
+}
+.cell.piece-4 {
+  background-color: var(--piece-4);
+}
+.cell.piece-5 {
+  background-color: var(--piece-5);
+}
+.cell.piece-6 {
+  background-color: var(--piece-6);
+}
+.cell.piece-7 {
+  background-color: var(--piece-7);
+}
+.cell.piece-8 {
+  background-color: var(--piece-8);
+}
+
+/* Controls */
+.controls {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: rgba(30, 41, 59, 0.3);
+  padding: 20px;
+  border-radius: 12px;
+}
+
+.status-bar {
+  text-align: center;
+  min-height: 1.5rem;
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+}
+
+button {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  font-family: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+#solve-btn {
+  background-color: var(--accent);
+  color: var(--bg-color);
+}
+
+#solve-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+#clear-btn {
+  background-color: transparent;
+  border: 1px solid var(--text-secondary);
+  color: var(--text-secondary);
+}
+
+#clear-btn:hover {
+  border-color: var(--text-primary);
+  color: var(--text-primary);
+}
+
+.hint-control {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.hint-control label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+input[type="range"] {
+  width: 100%;
+  accent-color: var(--accent);
+}
+
+footer {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  opacity: 0.5;
+}
