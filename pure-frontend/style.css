@@ -145,11 +145,13 @@ header p {
 }
 
 .cell.selected {
-    background-color: var(--accent);
+    background-color: #2D3436; /* Dark Charcoal for high contrast */
     color: #fff;
     transform: scale(1.05);
-    box-shadow: 0 4px 15px rgba(136, 205, 196, 0.4);
-    z-index: 10;
+    box-shadow: 0 4px 15px rgba(45, 52, 54, 0.4);
+    border: 2px solid #fff;
+    z-index: 20;
+    font-weight: 800;
 }
 
 /* Controls Card */
